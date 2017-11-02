@@ -1,1 +1,2 @@
-# vuejs-example
+# Vue.js サンプル
+

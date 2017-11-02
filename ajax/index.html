@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ajaxサンプル | Vue.js</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/locale/ja.js"></script>
+</head>
+<body>
+<script type="text/x-template" id="loading-template">
+  <transition name="loading">
+    <div class="overlay">
+      <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+      </div>
+    </div>
+  </transition>
+</script>
+<script type="text/x-template" id="modal-template">
+  <transition name="modal">
+    <div class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="$emit('close')">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <img v-bind:src="data.url" v-bind:width="data.meta.original.width" v-bind:height="data.meta.original.height" alt="" v-if="data.type == 'image'">
+            <video v-bind:src="data.url" autoplay loop controls v-if="data.type == 'gifv'"></video>
+          </div>
+        </div>
+      </div>
+      <div class="overlay" @click="$emit('close')"></div>
+    </div>
+  </transition>
+</script>
+<div class="container">
+  <nav class="bg-light" id="control">
+    <div class="navbar">
+      <h1 class="navbar-brand mb-0">Ajaxサンプル | Vue.js</h1>
+      <button class="btn btn-outline-secondary" type="button" v-on:click="reload"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+    </div>
+    <div class="navbar">
+      <div class="form-row align-items-center">
+        <div class="col-auto">
+          <label class="mr-sm-2" for="local">タイムライン</label>
+          <select id="local" class="custom-select mb-2 mr-sm-2 mb-sm-0" v-model="local" v-on:change="change">
+            <option disabled value="">Choose...</option>
+            <option value="1">ローカル</option>
+            <option value="0">連合</option>
+          </select>
+        </div>
+        <div class="col-auto">
+          <label class="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0">
+            <input type="checkbox" class="custom-control-input" v-model="media" v-on:change="change">
+            <span class="custom-control-indicator"></span>
+            <span class="custom-control-description">メディア</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <main role="main" id="app">
+    <div class="list-group" v-if="resources.length">
+      <div class="list-group-item list-group-item-action flex-column align-items-start" v-for="resource in resources">
+        <div class="d-flex w-100 justify-content-between">
+          <div class="account d-flex">
+            <div class="avatar">
+              <img v-bind:src="resource.account.avatar" width="48" height="48" alt="">
+            </div>
+            <div class="display-name">
+              <h5><a v-bind:href="resource.account.url" rel="noopener" target="_blank">{{resource.account|name}}</a></h5>
+              <p>@{{resource.account.username}}</p>
+            </div>
+          </div>
+          <a v-bind:href="resource.url" target="_blank" class="external-link"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+        </div>
+        <div v-if="resource.spoiler_text">
+          <span class="summary">{{resource.spoiler_text}}</span>
+          <a href="#" class="content-spoiler-link" @click.prevent="toggleText(resource)">もっと見る</a>
+        </div>
+        <div class="content" v-html="resource.content" v-show="!resource.spoiler">{{resource.content}}</div>
+        <div class="media-attachments" v-if="resource.media_attachments.length">
+          <div class="media-spoiler" v-show="resource.sensitive" v-on:click="toggleMeida(resource)">
+            <span>閲覧注意</span>
+            <span>クリックして表示</span>
+          </div>
+          <div class="icon-button overlayed" v-on:click="toggleMeida(resource)">
+            <i class="fa fa-fw fa-eye"></i>
+          </div>
+          <div class="row media-items" v-bind:class="['media-items-' + resource.media_attachments.length]">
+            <template v-for="media_attachment in resource.media_attachments">
+              <div class="col media-item-image" v-if="media_attachment.type == 'image'">
+                <a v-bind:href="media_attachment.url" class="media-image-thumbnail" @click.prevent="openModal(media_attachment)">
+                  <img v-bind:src="media_attachment.preview_url" alt="">
+                </a>
+              </div>
+            </template>
+            <template v-for="media_attachment in resource.media_attachments">
+              <div class="media-item-gifv" v-if="media_attachment.type == 'gifv'">
+                <a v-bind:href="media_attachment.url" class="media-item-video" rel="noopener" target="_blank" @click.prevent="openModal(media_attachment)">
+                  <video v-bind:src="media_attachment.url" autoplay loop></video>
+                  <span class="media-item-video-label">GIF</span>
+                </a>
+              </div>
+            </template>
+          </div>
+        </div>
+        <small class="created_at">{{resource.created_at|moment}}</small>
+      </div>
+    </div>
+    <loading v-if="loading"></loading>
+    <modal v-if="modalData" v-bind:data="modalData" @close="closeModal()"></modal>
+  </main>
+</div>
+<script>
+(function(){
+  Vue.component('loading', {
+    template: '#loading-template'
+  });
+  Vue.component('modal', {
+    props: ['data'],
+    template: '#modal-template'
+  });
+})();
+(function(){
+  var app = new Vue({
+    el: '#app',
+    data: {
+      url: 'https://pawoo.net/api/v1/timelines/public',
+//       url: 'data/public2.json',
+      local: false,
+      media: false,
+      resources: [],
+      timerID: null,
+      interval: 50000,
+      loading: false,
+      modalData: null
+    },
+    mounted() {
+      this.loading = true;
+      this.request();
+    },
+    methods: {
+      request: function(){
+        this.timerID && clearTimeout(this.timerID);
+        var q = [];
+        this.local && q.push('local=true');
+        this.media && q.push('media=true');
+        var that = this;
+        var url = this.url + '?' + q.join('&');
+        axios.get(url, {
+          responseType: 'json',
+        }).then(function(response){
+          that.resources = response.data;
+          for (var i in that.resources) {
+            var resource = that.resources[i];
+            that.$set(resource, 'spoiler', (resource.spoiler_text != ''));
+          }
+          that.loading = false;
+          that.$nextTick(that.tick);
+        });
+      },
+      tick: function(){
+        if (this.interval > 0) {
+          this.timerID = setTimeout(this.request, this.interval);
+        }
+      },
+      reload: function(){
+        this.loading = true;
+        this.request();
+      },
+      toggleText: function(resource){
+        resource.spoiler = !resource.spoiler;
+        this.$nextTick(this.tick);
+      },
+      toggleMeida: function(resource){
+        resource.sensitive = !resource.sensitive;
+        this.$nextTick(this.tick);
+      },
+      openModal: function(task){
+        this.modalData = task;
+        document.body.classList.add('modal-open');
+      },
+      closeModal: function(){
+        this.modalData = null;
+        document.body.classList.remove('modal-open');
+      }
+    },
+    filters: {
+      moment: function(date){
+        return moment(date).fromNow();
+      },
+      name: function(account){
+        if (account.display_name != '') {
+          return account.display_name;
+        }
+        return account.username;
+      }
+    }
+  });
+  var control = new Vue({
+    el: '#control',
+    data: {
+      local: 0,
+      media: false
+    },
+    methods: {
+      reload: app.reload,
+      change: function(){
+        app.local = (this.local == 1);
+        app.media = this.media;
+        app.reload();
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>

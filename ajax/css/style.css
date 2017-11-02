@@ -1,0 +1,365 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* basic
+-------------------------------------------*/
+@import url(http://fonts.googleapis.com/earlyaccess/notosansjp.css);
+
+html {
+  height: 100%;
+}
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 400;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f2f1;
+}
+
+/* bootstrap
+-------------------------------------------*/
+.container {
+  padding: 20px 0;
+}
+select.custom-select,
+label.custom-checkbox,
+button.btn,
+button.close {
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 730px;
+  }
+}
+
+/* main
+-------------------------------------------*/
+main {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* overlay
+-------------------------------------------*/
+.overlay {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  background: hsla(0, 0%, 86%, .8);
+  transition: opacity .3s ease;
+}
+
+/* loading
+-------------------------------------------*/
+.loading-enter-active, .loading-leave-active {
+  transition: opacity .5s
+}
+.loading-enter, .loading-leave-to {
+  opacity: 0
+}
+
+.spinner {
+  width: 70px;
+}
+.spinner > div {
+  width: 18px;
+  height: 18px;
+  background-color: rgb(187, 187, 187);
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+.spinner .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+.spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+  0%, 80%, 100% { -webkit-transform: scale(0) }
+  40% { -webkit-transform: scale(1.0) }
+}
+@keyframes sk-bouncedelay {
+  0%, 80%, 100% { 
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  } 40% { 
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+  }
+}
+
+/* modal
+-------------------------------------------*/
+.modal {
+  display: block;
+}
+.modal-dialog {
+  z-index: 101;
+  -webkit-transition: -webkit-transform .3s ease-out;
+  transition: -webkit-transform .3s ease-out;
+  transition: transform .3s ease-out;
+  transition: transform .3s ease-out, -webkit-transform .3s ease-out;
+}
+.modal-body img,
+.modal-body video {
+  width: 100%;
+  height: auto;
+}
+
+/*
+ * The following styles are auto-applied to elements with
+ * transition="modal" when their visibility is toggled
+ * by Vue.js.
+ *
+ * You can easily play with the modal transition by editing
+ * these styles.
+ */
+.modal-enter-active, .modal-leave-active {
+  transition: opacity .5s
+}
+.modal-enter, .modal-leave-to {
+  opacity: 0
+}
+.modal-enter-active .modal-dialog,
+.modal-leave-active .modal-dialog {
+  -webkit-transform: translate(0, 0);
+  transform: translate(0, 0);
+}
+.modal-enter .modal-dialog,
+.modal-leave-to .modal-dialog {
+  -webkit-transform: translate(0, -25%);
+  transform: translate(0, -25%);
+}
+
+
+/* account
+-------------------------------------------*/
+div.account {
+  margin-bottom: 10px;
+}
+div.avatar {
+  width: 56px;
+  height: 56px;
+  margin-right: 10px;
+}
+div.avatar img {
+  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+}
+div.display-name {
+  padding-top: 2px;
+}
+div.display-name h5 {
+  margin-bottom: 0.2rem;
+}
+div.display-name h5 a {
+  color: #282c37;
+}
+div.display-name p {
+  font-size: 1rem;
+  color: #9baec8;
+  margin-bottom: 0;
+}
+
+a.external-link {
+  font-size: 1rem;
+  color: #282c37;
+}
+
+/* content
+-------------------------------------------*/
+a.content-spoiler-link {
+  display: inline-block;
+  color: white;
+  background: #9baec8;
+  border-radius: 2px;
+  border: 0;
+  font-weight: 500;
+  font-size: 11px;
+  padding: 0.3em 0.8em;
+  margin-left: 1em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+a.content-spoiler-link:hover {
+  background: #b5c3d6;
+}
+div.content a {
+  word-break: break-all;
+}
+div.content a > .invisible {
+  display: none;
+}
+div.content a .ellipsis:after {
+  content: "\2026";
+}
+div.content p:last-child {
+  margin-bottom: 0;
+}
+
+/* media
+-------------------------------------------*/
+div.media-attachments {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin-top: 1rem;
+}
+div.media-spoiler {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #9baec8;
+  color: white;
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+  text-align: center;
+  -webkit-transition: all .1s linear;
+  transition: all .1s linear;
+  z-index: 2;
+  cursor: pointer;
+}
+.icon-button {
+  display: block;
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  vertical-align: baseline;
+  line-height: 1;
+  text-shadow: 0 1px 1px #000, 1px 0 1px #000;
+  background: rgba(0, 0, 0, .6);
+  color: hsla(0, 0%, 100%, .7);
+  border-radius: 4px;
+  padding: 2px;
+  z-index: 1;
+  cursor: pointer;
+}
+
+div.media-items {
+  width: 100%;
+  margin-left: -2px;
+  margin-right: -2px;
+}
+
+/* type is image */
+div.media-item-image {
+  padding-left: 2px;
+  padding-right: 2px;
+  margin-bottom: 4px;
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 50%;
+  -ms-flex: 0 0 50%;
+  flex: 0 0 50%;
+  max-width: 50%
+}
+div.media-items-1 div.media-item-image {
+  -webkit-flex-basis: 0;
+  -ms-flex-preferred-size: 0;
+  flex-basis: 0;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  max-width: 100%;
+}
+a.media-image-thumbnail {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding-top: 75%;
+  vertical-align: top;
+  cursor: zoom-in;
+}
+a.media-image-thumbnail > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-family: object-fit\: cover;
+  object-fit: cover;
+}
+div.media-items-2 a.media-image-thumbnail {
+  padding-top: 150%;
+}
+div.media-items-3 div.media-item-image:first-child a.media-image-thumbnail {
+  padding-top: 152%;
+}
+div.media-items-3 div.media-item-image:last-child {
+  position: absolute;
+  right: 2px;
+  bottom: 0;
+}
+
+/* type is gifv */
+div.media-item-gifv {
+  position: relative;
+  width: 100%;
+}
+a.media-item-video {
+  display: block;
+  width: 100%;
+  padding-top: 56.25%;
+  cursor: zoom-in;
+}
+a.media-item-video > video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-family: object-fit\: cover;
+  object-fit: cover;
+}
+.media-item-video-label {
+  display: block;
+  position: absolute;
+  color: #fff;
+  background: rgba(0, 0, 0, .5);
+  bottom: 6px;
+  left: 6px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .9;
+  -webkit-transition: opacity .1s ease;
+  transition: opacity .1s ease;
+}
+
+/* created_at
+-------------------------------------------*/
+.created_at {
+  display: block;
+  margin-top: 10px;
+  color: #9baec8;
+}
