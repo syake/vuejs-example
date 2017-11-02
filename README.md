@@ -11,8 +11,12 @@ Hello World。
 Todoリストサンプル。    
 追加と削除ができます。
 
+![](https://github.com/syake/vuejs-example/blob/master/assets/list.png)
+
 ## ajax
 
 axios.js を使ってマストドンのタイムラインを Ajax で読み込んで Vue.js でレンダリングするサンプル。    
 日付の表示のため moment.js も使用。    
 画像クリックでモーダルウィンドウを表示。
+
+![](https://github.com/syake/vuejs-example/blob/master/assets/ajax.png)
