@@ -1,5 +1,7 @@
 # Vue.js サンプル
 
+Vue.js 2.x のサンプルです。  
+https://jp.vuejs.org/v2/guide/
 
 ## hello
 
